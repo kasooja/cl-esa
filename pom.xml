@@ -43,4 +43,7 @@
         </build>
   
   
+        <modules>
+        	<module>core</module>
+        </modules>
 </project>
