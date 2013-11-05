@@ -45,5 +45,9 @@
   
         <modules>
         	<module>core</module>
+        	<module>ds.clesa</module>
+        	<module>lucene.basic</module>
+        	<module>processor</module>
+        	<module>reader</module>
         </modules>
 </project>

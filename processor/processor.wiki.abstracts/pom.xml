@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>eu.monnetproject</groupId>
+    <artifactId>processor</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <artifactId>processor.wiki.abstracts</artifactId>
+  <name>eu.monnetproject.clesa.processor.wiki.abstracts</name>
+  <description>processes and indexes wiki abstracts</description>
+  
+   <dependencies>
+          <dependency>
+                        <groupId>${project.groupId}</groupId>
+                        <artifactId>core</artifactId>
+                        <version>${project.version}</version>
+                </dependency>
+                
+                        <dependency>
+                        <groupId>${project.groupId}</groupId>
+                        <artifactId>lucene.basic</artifactId>
+                        <version>${project.version}</version>
+                </dependency>
+                
+                <dependency>
+                        <groupId>${project.groupId}</groupId>
+                        <artifactId>reader.rdf</artifactId>
+                        <version>${project.version}</version>
+                </dependency>
+  </dependencies>
+  
+</project>
