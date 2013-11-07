@@ -139,8 +139,10 @@ public class MultiLingualArticlesIndexer {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			int i = 0;			
+			int i = 0;
+			
 			if(iterator != null){
+				
 				while(iterator.hasNext()) {				
 					System.out.println(++i);			
 					OTDFFile readFile = iterator.next();			
