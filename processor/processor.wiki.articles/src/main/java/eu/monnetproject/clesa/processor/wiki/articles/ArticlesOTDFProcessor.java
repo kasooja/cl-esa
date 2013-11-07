@@ -9,13 +9,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
-import org.apache.lucene.util.Version;
 
 import eu.monnetproject.clesa.core.OTDF.OTDFFile;
 import eu.monnetproject.clesa.core.OTDF.OTDFXml;
@@ -119,9 +116,8 @@ public class ArticlesOTDFProcessor {
 		queryStrings[0] = title;
 		queryStrings[1] = language.getIso639_1();
 		fields[0] = TitleURILucDocCreator.Fields.Title.toString();
-		fields[1] = TitleURILucDocCreator.Fields.LanguageISOCode.toString();
-		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
-		TopScoreDocCollector docCollector = searcher.multiFieldSearch(queryStrings, fields, flags, analyzer, 10);
+		fields[1] = TitleURILucDocCreator.Fields.LanguageISOCode.toString();		
+		TopScoreDocCollector docCollector = searcher.multiFieldTermSearch(queryStrings, fields, flags, 10);
 		ScoreDoc[] scoreDocs = docCollector.topDocs().scoreDocs;
 		if(scoreDocs.length>0) {
 			ScoreDoc scoreDoc = scoreDocs[0];
@@ -147,8 +143,14 @@ public class ArticlesOTDFProcessor {
 					continue;
 				String title =  wikiArticle.getTitle();
 				title = TextNormalizer.deAccent(title);
-				Language language = wikiArticle.getLanguage();			
-				String uri = searchUri(title, language);
+				Language language = wikiArticle.getLanguage();
+				String uri = null;
+				try{
+					uri = searchUri(title, language);
+				} catch (Exception e){
+					System.err.println("error in searching title and language:  " + title); 
+					continue;	
+				}				
 				if(uri!=null) {
 					content = TextNormalizer.convertToUnicode(content);
 					content =  tokenize(content);

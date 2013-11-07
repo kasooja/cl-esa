@@ -110,6 +110,15 @@ public class Searcher {
 		}
 	}
 	
+	public TopScoreDocCollector multiFieldTermSearch(String[] queryStrings, String[] fields, BooleanClause.Occur[] flags, int lucHits){
+		BooleanQuery booleanQuery = new BooleanQuery();
+		for(int i=0; i<queryStrings.length ; i++) {
+			TermQuery query = new TermQuery(new Term(fields[i], queryStrings[i]));			
+			booleanQuery.add(query, flags[i]);			
+		}
+		return search(booleanQuery, lucHits);
+	}
+	
 	public TopScoreDocCollector multiFieldSearch(String[] queryStrings, String[] fields, BooleanClause.Occur[] flags, Analyzer analyzer, int lucHits){		
 		escapeStrings(queryStrings);
 		Query query = null;
