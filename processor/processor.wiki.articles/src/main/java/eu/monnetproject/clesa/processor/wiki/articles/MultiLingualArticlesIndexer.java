@@ -120,9 +120,9 @@ public class MultiLingualArticlesIndexer {
 				lucDocCreator.addTopic(file.getFeatureValue(ArticlesOTDFProcessor.Features.Title.toString()));				
 				lucDocCreator.addLanguageTopicContentField(otdfLanguage, file.getFeatureValue(ArticlesOTDFProcessor.Features.Article.toString()));
 				indexer.addDoc(lucDocCreator.getLucDoc());
-				System.out.println(++i);							
+				System.out.println(++i);
+				lucDocCreator.reset();												
 			}
-			lucDocCreator.reset();								
 		}
 		reader.close();
 	}
