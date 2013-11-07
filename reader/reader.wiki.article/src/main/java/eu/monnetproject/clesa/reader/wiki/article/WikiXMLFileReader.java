@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Set;
+
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -22,6 +24,12 @@ import eu.monnetproject.clesa.core.utils.BasicFileTools;
  */
 
 public class WikiXMLFileReader {
+
+//	private static final Pattern digitPattern = Pattern.compile("^\\d+$");
+//	private static final Pattern yearPattern = Pattern.compile("\\s*[12][0-9]{3}\\s*");
+
+	private final int MinArticleLength = 200;
+	private int artcleTitleWeight = 4;
 
 	private String xmlFilePath = null;	
 	//private final String STRANGE_SEQ = "|||__|||";
@@ -66,6 +74,7 @@ public class WikiXMLFileReader {
 						break;
 				}
 		}
+
 		public void tryNext() throws IOException {
 			String line = null;
 			String articleTitle = null;
@@ -83,10 +92,24 @@ public class WikiXMLFileReader {
 					break;
 				}
 			}
-			if(articleTitle !=null)
-				this.article = new WikiArticle(cleanArticleContent(articleContent, articleTitle), articleTitle, language);
-			else
+			if(articleTitle !=null){
+				String cleanArticleContent = cleanArticleContent(articleContent, articleTitle);
+				if(cleanArticleContent == null){
+					this.article = null;
+					//this.article = new WikiArticle(cleanArticleContent, articleTitle);					
+				}
+				else
+					this.article = new WikiArticle(processArticleContent(cleanArticleContent, articleTitle), articleTitle, language);
+			}
+			else{
 				this.article = null;
+			}
+		}
+
+		private String processArticleContent(String articleContent, String articleTitle){
+			for(int count = 0; count < artcleTitleWeight; count++)
+				articleContent = articleContent + " " + articleTitle;
+			return articleContent;
 		}
 
 		@Override
@@ -116,6 +139,15 @@ public class WikiXMLFileReader {
 
 		// return true if title is a absolute article not any nameSpace type e.g. Category 
 		private Boolean isNameSpace(String title){
+
+			//			Matcher matcher = digitPattern.matcher(title);
+			//			if(matcher.find())
+			//				return true;
+			//
+			//			matcher = yearPattern.matcher(title);
+			//			if(matcher.find())
+			//				return true;
+
 			for(String key: WikiNamespaces.values){
 				if(title.toLowerCase().contains(key.toLowerCase()))
 					return true;
@@ -123,11 +155,17 @@ public class WikiXMLFileReader {
 			return false;
 		}
 
+
+
 		private String cleanArticleContent(String content, String title) {
+
 			if(isNameSpace(title))
 				return null;
 			if(title.toLowerCase().contains("(disambiguation)"))
 				return null;
+			if(title.toLowerCase().startsWith("list"))
+				return null;
+
 			BufferedReader reader = new BufferedReader(new StringReader(content));
 			StringBuilder doc = null;
 			String s;
@@ -141,7 +179,13 @@ public class WikiXMLFileReader {
 							doc = null;
 							// remove all redirect articles
 							if(cleanWiki.toLowerCase().contains("#REDIRECT".toLowerCase()))
-								return null;							
+								return null;
+
+							Set<String> uniqueTokens = new HashSet<String>(Arrays.asList(cleanWiki.split(" ")));
+
+							if(uniqueTokens.size() < MinArticleLength)
+								return null;
+
 							return cleanWiki.trim();
 						}
 					}
@@ -155,17 +199,35 @@ public class WikiXMLFileReader {
 			return null;
 		}
 
+
 		private String cleanText(String s) {
 			return StringEscapeUtils.unescapeHtml3(s.replaceAll("\\{\\{[^\\}]*\\}\\}", " ").replaceAll("[='\\[\\]\\|]", " ").replaceAll("^[\\*\\:#]+", " ").replaceAll("<[^>]*>", " "));
 		}	
 	}
-	
+
 	private static class WikiNamespaces {				
 		private static String [] list = {"Media:","Special:","Talk:","User:","User_talk:","Wikipedia:","Wikipedia_talk:",
-				"File:","File_talk:","MediaWiki:","MediaWiki_talk:","Template:","Template_talk:","Help:","Help_talk:",
-				"Category:","Category_talk:","Portal:","Portal_talk:","Book:","Book_talk:"};
-		
+			"File:","File_talk:","MediaWiki:","MediaWiki_talk:","Template:","Template_talk:","Help:","Help_talk:",
+			"Category:","Category_talk:","Portal:","Portal_talk:","Book:","Book_talk:"};
+
 		public static HashSet<String> values = new HashSet<String>(Arrays.asList(list));
 	}
+
+	public static void main(String[] args) {
+		String xmlFilePath = "/data/wikiDemo.xml";
+		WikiXMLFileReader reader = new WikiXMLFileReader(xmlFilePath, Language.ENGLISH);
+		Iterator<WikiArticle> articleIter = null;
+		try {
+			articleIter = reader.getWikiArticleIter();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		while(articleIter.hasNext())
+			System.out.println(articleIter.next().getTitle());
+
+	}
+
 
 }

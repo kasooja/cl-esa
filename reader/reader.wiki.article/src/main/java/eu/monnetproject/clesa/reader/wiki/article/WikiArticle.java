@@ -46,5 +46,8 @@ public class WikiArticle {
 		this.title = title;
 	}
 	
+	public static void main(String[] args) {
+		System.out.println("l");
+	}
 	
 }
