@@ -143,6 +143,8 @@ public class ArticlesOTDFProcessor {
 				System.out.println("j =  "  + (++j));
 				WikiArticle wikiArticle = rdfIter.next();
 				String content = wikiArticle.getContent();
+				if(content == null)
+					continue;
 				String title =  wikiArticle.getTitle();
 				title = TextNormalizer.deAccent(title);
 				Language language = wikiArticle.getLanguage();			

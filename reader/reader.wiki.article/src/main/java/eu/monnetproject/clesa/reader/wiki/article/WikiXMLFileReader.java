@@ -30,7 +30,7 @@ public class WikiXMLFileReader {
 	private static final Pattern digitPattern = Pattern.compile("^\\d+$");
 	private static final Pattern yearPattern = Pattern.compile("\\s*[12][0-9]{3}\\s*");
 
-	private final int MinArticleLength = 200;
+	private final int MinArticleLength = 100;
 	private int artcleTitleWeight = 4;
 
 	private String xmlFilePath = null;	
@@ -97,8 +97,8 @@ public class WikiXMLFileReader {
 			if(articleTitle !=null){
 				String cleanArticleContent = cleanArticleContent(articleContent, articleTitle);
 				if(cleanArticleContent == null){
-					this.article = null;
-					//this.article = new WikiArticle(cleanArticleContent, articleTitle);					
+//					this.article = null;
+					this.article = new WikiArticle(cleanArticleContent, articleTitle, language);					
 				}
 				else
 					this.article = new WikiArticle(processArticleContent(cleanArticleContent, articleTitle), articleTitle, language);
