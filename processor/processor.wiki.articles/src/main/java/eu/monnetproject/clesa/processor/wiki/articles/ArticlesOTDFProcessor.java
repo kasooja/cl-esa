@@ -60,7 +60,7 @@ public class ArticlesOTDFProcessor {
 	}
 
 	private void setTokenizer(Language articleLang) {		
-		TextNormalizer.getTokenizer(articleLang);				
+		tokenizer = TextNormalizer.getTokenizer(articleLang);				
 	}
 
 	public String tokenize(String input) {	
@@ -143,7 +143,7 @@ public class ArticlesOTDFProcessor {
 				System.out.println("j =  "  + (++j));
 				WikiArticle wikiArticle = rdfIter.next();
 				String content = wikiArticle.getContent();
-				if(content == null)
+				if((content == null) || (content.isEmpty()))
 					continue;
 				String title =  wikiArticle.getTitle();
 				title = TextNormalizer.deAccent(title);
