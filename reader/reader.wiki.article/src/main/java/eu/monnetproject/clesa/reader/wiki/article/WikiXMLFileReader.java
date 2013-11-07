@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -25,8 +27,8 @@ import eu.monnetproject.clesa.core.utils.BasicFileTools;
 
 public class WikiXMLFileReader {
 
-//	private static final Pattern digitPattern = Pattern.compile("^\\d+$");
-//	private static final Pattern yearPattern = Pattern.compile("\\s*[12][0-9]{3}\\s*");
+	private static final Pattern digitPattern = Pattern.compile("^\\d+$");
+	private static final Pattern yearPattern = Pattern.compile("\\s*[12][0-9]{3}\\s*");
 
 	private final int MinArticleLength = 200;
 	private int artcleTitleWeight = 4;
@@ -138,15 +140,21 @@ public class WikiXMLFileReader {
 		}		
 
 		// return true if title is a absolute article not any nameSpace type e.g. Category 
-		private Boolean isNameSpace(String title){
+		private Boolean isNameSpaceOrDigitOrYearOrDisOrList(String title){
 
-			//			Matcher matcher = digitPattern.matcher(title);
-			//			if(matcher.find())
-			//				return true;
-			//
-			//			matcher = yearPattern.matcher(title);
-			//			if(matcher.find())
-			//				return true;
+			Matcher matcher = digitPattern.matcher(title);
+			if(matcher.find())
+				return true;
+			
+			if(title.toLowerCase().contains("(disambiguation)"))
+				return true;
+			
+			if(title.toLowerCase().startsWith("list"))
+				return true;
+
+			matcher = yearPattern.matcher(title);
+			if(matcher.find())
+				return true;
 
 			for(String key: WikiNamespaces.values){
 				if(title.toLowerCase().contains(key.toLowerCase()))
@@ -159,13 +167,9 @@ public class WikiXMLFileReader {
 
 		private String cleanArticleContent(String content, String title) {
 
-			if(isNameSpace(title))
+			if(isNameSpaceOrDigitOrYearOrDisOrList(title))
 				return null;
-			if(title.toLowerCase().contains("(disambiguation)"))
-				return null;
-			if(title.toLowerCase().startsWith("list"))
-				return null;
-
+		
 			BufferedReader reader = new BufferedReader(new StringReader(content));
 			StringBuilder doc = null;
 			String s;
