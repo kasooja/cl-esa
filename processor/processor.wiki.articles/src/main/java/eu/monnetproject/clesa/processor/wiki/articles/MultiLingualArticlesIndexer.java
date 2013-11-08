@@ -140,10 +140,8 @@ public class MultiLingualArticlesIndexer {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			int i = 0;
-			
-			if(iterator != null){
-				
+			int i = 0;			
+			if(iterator != null){				
 				while(iterator.hasNext()) {				
 					System.out.println(++i);			
 					OTDFFile readFile = iterator.next();			
@@ -168,29 +166,29 @@ public class MultiLingualArticlesIndexer {
 		}
 	}
 
-	//	private Directory getIndex(String indexPath) {
-	//		Directory index = null;
-	//		try {
-	//			index = new SimpleFSDirectory(new File(indexPath));
-	//		} catch (IOException e) {
-	//			e.printStackTrace();
-	//		}		
-	//		return index;
-	//	}
-
 	private Directory getIndex(String indexPath) {
-		Directory dir = null;
 		Directory index = null;
 		try {
-			dir = new SimpleFSDirectory(new File(indexPath + 
-					System.getProperty("file.separator")));	
-			index = new RAMDirectory(dir);
-			dir.close();
+			index = new SimpleFSDirectory(new File(indexPath));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
 		return index;
 	}
+
+	//	private Directory getIndex(String indexPath) {
+	//		Directory dir = null;
+	//		Directory index = null;
+	//		try {
+	//			dir = new SimpleFSDirectory(new File(indexPath + 
+	//					System.getProperty("file.separator")));	
+	//			index = new RAMDirectory(dir);
+	//			dir.close();
+	//		} catch (IOException e) {
+	//			e.printStackTrace();
+	//		}		
+	//		return index;
+	//	}
 
 
 	public static void main(String[] args) {	
