@@ -136,13 +136,19 @@ public class ArticlesOTDFProcessor {
 			int i = 0;
 			int j = 0;
 			while(rdfIter.hasNext()){				
-				System.out.println("j =  "  + (++j));
+				System.out.println("i = " + i + "  " + "j =  "  + (++j));
 				WikiArticle wikiArticle = rdfIter.next();
 				String content = wikiArticle.getContent();
 				if((content == null) || (content.isEmpty()))
 					continue;
 				String title =  wikiArticle.getTitle();
+				title = TextNormalizer.convertToUnicode(title);
 				title = TextNormalizer.deAccent(title);
+				//	replace with a regex
+				title = title.replace(".", " ").trim();			
+				title = TextNormalizer.deAccent(title);
+		
+				
 				Language language = wikiArticle.getLanguage();
 				String uri = null;
 				try{
