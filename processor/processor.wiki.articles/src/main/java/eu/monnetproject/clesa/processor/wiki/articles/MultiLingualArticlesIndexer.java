@@ -20,7 +20,6 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 
@@ -40,7 +39,7 @@ import eu.monnetproject.clesa.lucene.basic.Searcher;
 
 public class MultiLingualArticlesIndexer {	
 
-	private final double BUFFERRAMSIZE = 512.0;
+	private final double BUFFERRAMSIZE = 2048.0;
 	private static Properties config =  new Properties();
 	private String indexDirPathToRead;
 	private String indexDirPathToWrite;	
@@ -70,7 +69,8 @@ public class MultiLingualArticlesIndexer {
 	}
 
 	private void openReader() {		
-		searcher = new Searcher(indexDirPathToRead);					
+		boolean onRAM = false;
+		searcher = new Searcher(indexDirPathToRead, onRAM);					
 	}
 
 

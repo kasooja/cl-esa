@@ -33,21 +33,28 @@ public class Searcher {
 	private final static int maxClauseCount = 6144;
 	private IndexReader reader;
 	private IndexSearcher searcher;
-	
+
 	public Searcher(String indexPath){
 		BooleanQuery.setMaxClauseCount(maxClauseCount);		
 		setIndexReader(getIndex(indexPath));
 		setIndexSearcher();		
 	}
 
+	public Searcher(String indexPath, boolean onRAM){
+		BooleanQuery.setMaxClauseCount(maxClauseCount);
+		setIndexReader(getIndex(indexPath, onRAM));
+		setIndexSearcher();		
+	}
+
+
 	public Searcher(IndexReader reader){
 		BooleanQuery.setMaxClauseCount(maxClauseCount);		
 		setIndexReader(reader);
 		setIndexSearcher();		
 	}
-	
+
 	private void setIndexReader(IndexReader reader) {
-			this.reader = reader;
+		this.reader = reader;
 	}
 
 	private void setIndexReader(Directory indexDir) {
@@ -89,6 +96,25 @@ public class Searcher {
 		return index;
 	}
 
+	private Directory getIndex(String indexPath, boolean onRAM) {
+		Directory index = null;
+		try {
+			Directory dir = new SimpleFSDirectory(new File(indexPath + 
+					System.getProperty("file.separator")));
+			if(onRAM){
+				index = new RAMDirectory(dir);
+				dir.close();			
+				return index;
+			}
+			else {				
+				return dir;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+		return index;
+	}
+
 	private TopScoreDocCollector search(Query query, int lucHits) {
 		TopScoreDocCollector collector = TopScoreDocCollector.create(lucHits, true);
 		try {
@@ -103,13 +129,13 @@ public class Searcher {
 		TermQuery query = new TermQuery(new Term(fieldName, queryString));
 		return search(query, lucHits);
 	}
-	
+
 	private static void escapeStrings(String[] queryStrings) {
 		for(int i=0; i<queryStrings.length; i++) {
 			queryStrings[i] = QueryParser.escape(queryStrings[i]);
 		}
 	}
-	
+
 	public TopScoreDocCollector multiFieldTermSearch(String[] queryStrings, String[] fields, BooleanClause.Occur[] flags, int lucHits){
 		BooleanQuery booleanQuery = new BooleanQuery();
 		for(int i=0; i<queryStrings.length ; i++) {
@@ -118,7 +144,7 @@ public class Searcher {
 		}
 		return search(booleanQuery, lucHits);
 	}
-	
+
 	public TopScoreDocCollector multiFieldSearch(String[] queryStrings, String[] fields, BooleanClause.Occur[] flags, Analyzer analyzer, int lucHits){		
 		escapeStrings(queryStrings);
 		Query query = null;
