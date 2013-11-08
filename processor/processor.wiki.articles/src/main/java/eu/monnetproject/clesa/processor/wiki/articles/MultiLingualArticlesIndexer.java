@@ -124,6 +124,7 @@ public class MultiLingualArticlesIndexer {
 				lucDocCreator.reset();												
 			}
 		}
+		indexer.closeIndexer();
 		reader.close();
 	}
 
