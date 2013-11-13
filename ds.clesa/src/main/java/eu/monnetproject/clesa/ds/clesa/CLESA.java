@@ -82,8 +82,9 @@ public class CLESA {
 	private void setConfig(){
 			multiLingualIndexPathToRead = config.getProperty("multiLingualIndexPathToRead");
 			noOfTopicsToBeCompared = Integer.parseInt(config.getProperty("noOfTopicsToBeCompared"));
-			lucHits = Integer.parseInt(config.getProperty("lucHits"));		
-			searcher = new Searcher(multiLingualIndexPathToRead);
+			lucHits = Integer.parseInt(config.getProperty("lucHits"));
+			boolean onRAM = false;
+			searcher = new Searcher(multiLingualIndexPathToRead, onRAM);
 	}	
 
 	
@@ -199,5 +200,34 @@ public class CLESA {
 			vectorMap.put(threadName, new Vector<String>(uriWeightMap));
 		}
 	}	
+	
+	public static void main(String[] args) {
+		String text1 = args[0];
+		String text2 = args[1];
+		Pair<String, Language> pair1 = new Pair<String, Language>(text1, Language.ENGLISH);
+		Pair<String, Language> pair2 = new Pair<String, Language>(text2, Language.ENGLISH);
+		CLESA clesa = new CLESA();
+		Vector<String> vector1 = clesa.getVector(pair1);
+		Vector<String> vector2 = clesa.getVector(pair2);
+		
+		int i = 0;
+		for(String concept : vector1.getVectorAsMap().keySet()){
+			System.out.println(i + " " + concept);
+			i++;
+		}
+		
+		System.out.println("\n" + i + "\n");
+		
+		i  = 0;
+		for(String concept : vector2.getVectorAsMap().keySet()){
+			System.out.print(i++ + " " + concept);
+			i++;
+		}
+		System.out.println("\n" + i + "\n");
+		
+		double score = clesa.score(pair1, pair2);
+		System.out.println(score);
+		
+	}
 
 }
