@@ -6,9 +6,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
@@ -48,6 +50,7 @@ public class MultiLingualArticlesIndexer {
 	private String OTDFXmlFileToRead;
 	private Indexer indexer;
 	private Searcher searcher;
+	private Set<Language> languagesDone = new HashSet<Language>();
 
 	public MultiLingualArticlesIndexer(){
 		loadConfig();
@@ -61,10 +64,16 @@ public class MultiLingualArticlesIndexer {
 
 	public void createPerFieldAnalyzer(){
 		Map<String, Analyzer> fieldAnalyzerMap = new HashMap<String, Analyzer>();
+		for(Language language : languagesDone) {
+			String topicContentFieldName = MultiLingualArticleOTDFLucDocCreator.Fields.getLanguageTopicContentField(language);
+			Analyzer analyzer = getAnalyzer(language);
+			if(analyzer!=null)
+				fieldAnalyzerMap.put(topicContentFieldName, analyzer);
+		}		
 		String topicContentFieldName = MultiLingualArticleOTDFLucDocCreator.Fields.getLanguageTopicContentField(otdfLanguage);
 		Analyzer analyzer = getAnalyzer(otdfLanguage);
 		if(analyzer!=null)
-			fieldAnalyzerMap.put(topicContentFieldName, analyzer);		
+			fieldAnalyzerMap.put(topicContentFieldName, analyzer);
 		analyzers = new PerFieldAnalyzerWrapper(new StandardAnalyzer(Version.LUCENE_36), fieldAnalyzerMap);
 	}
 
@@ -72,7 +81,6 @@ public class MultiLingualArticlesIndexer {
 		boolean onRAM = false;
 		searcher = new Searcher(indexDirPathToRead, onRAM);					
 	}
-
 
 	private void openWriter() {		
 		try {
@@ -95,7 +103,10 @@ public class MultiLingualArticlesIndexer {
 			indexDirPathToRead = config.getProperty("indexDirPathToRead");			
 			indexDirPathToWrite = config.getProperty("indexDirPathToWrite");
 			OTDFXmlFileToRead = config.getProperty("OTDFXmlFileToRead");
-			otdfLanguage = Language.getByIso639_1(config.getProperty("languageOTDF"));		
+			otdfLanguage = Language.getByIso639_1(config.getProperty("languageOTDF"));
+			String[] languageCodes = config.getProperty("langsDone").split(";");
+			for(String languageCode : languageCodes) 
+				languagesDone.add(Language.getByIso639_1(languageCode.trim().toLowerCase()));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
