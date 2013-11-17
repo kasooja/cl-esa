@@ -58,7 +58,7 @@ public class CLESATrove {
 	private static Properties config = new Properties();
 	private String multiLingualIndexPathToRead; 
 	private int lucHits = 1000;
-//	private int noOfTopicsToBeCompared = 1000;
+	//	private int noOfTopicsToBeCompared = 1000;
 	private Searcher searcher;
 	private Map<Language, Tokenizer> langTokenizerMap = new HashMap<Language, Tokenizer>();
 
@@ -80,7 +80,7 @@ public class CLESATrove {
 
 	private void setConfig(){
 		multiLingualIndexPathToRead = config.getProperty("multiLingualIndexPathToRead");
-	//	noOfTopicsToBeCompared = Integer.parseInt(config.getProperty("noOfTopicsToBeCompared"));
+		//	noOfTopicsToBeCompared = Integer.parseInt(config.getProperty("noOfTopicsToBeCompared"));
 		lucHits = Integer.parseInt(config.getProperty("lucHits"));
 		boolean onRAM = false;
 		searcher = new Searcher(multiLingualIndexPathToRead, onRAM);
@@ -131,19 +131,6 @@ public class CLESATrove {
 		return cosineProduct(vector1, vector2);	
 	}
 
-
-	//	i = 0
-	//			j = 0
-	//			result = 0
-	//			while i < length(vec1) && j < length(vec2):
-	//			  if vec1[i].key == vec2[j].key:
-	//			    result = result + vec1[i].value * vec2[j].value
-	//			  else if vec1[i].key < vec2[j].key:
-	//			    i = i + 1
-	//			  else
-	//			    j = j + 1
-
-
 	public double cosineProduct(TIntDoubleHashMap map1, TIntDoubleHashMap map2){
 		if(map1 == null || map2 == null)
 			return 0.0;		
@@ -163,8 +150,8 @@ public class CLESATrove {
 		int[] secKeys = secMap.keys();
 		int i = 0;		
 		for(int unitVector : iteratingMap.keys()){
-			Double score1 =  iteratingMap.get(unitVector);
-			Double score2 = 0.0;
+			double score1 =  iteratingMap.get(unitVector);
+			double score2 = 0.0;
 			if(secMap.containsKey(unitVector)){
 				score2 = secMap.get(unitVector);
 				dotProduct = dotProduct + score1*score2;
