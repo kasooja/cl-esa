@@ -16,7 +16,7 @@ import eu.monnetproject.clesa.core.utils.Pair;
 import eu.monnetproject.clesa.core.utils.TextNormalizer;
 import eu.monnetproject.clesa.lucene.basic.AnalyzerFactory;
 import eu.monnetproject.clesa.lucene.basic.Searcher;
-import gnu.trove.map.hash.TIntDoubleHashMap;
+import gnu.trove.TIntDoubleHashMap;
 
 
 /**
