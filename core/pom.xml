@@ -11,16 +11,12 @@
 	<description>core project containing common and basic functionalities for clesa lib</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.jblas</groupId>
-			<artifactId>jblas</artifactId>
-			<version>1.2.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.googlecode.efficient-java-matrix-library</groupId>
-			<artifactId>ejml</artifactId>
-			<version>0.23</version>
+	<dependency>
+			<groupId>trove</groupId>
+			<artifactId>trove</artifactId>
+			<version>3.0.3</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/trove-3.0.3.jar</systemPath>
 		</dependency>
 
 	</dependencies>
