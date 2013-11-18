@@ -62,12 +62,22 @@ public class CLESA {
 	private int lucHits = 1000;
 	private Searcher searcher;
 	private Map<Language, Tokenizer> langTokenizerMap = new HashMap<Language, Tokenizer>();
+	boolean onRAM = true;
+	
 
 
+	public CLESA(boolean onRAM) {
+		this.onRAM = onRAM;
+		loadConfig("load/eu.monnetproject.clesa.CLESA.properties");
+		setConfig();
+	}
+	
 	public CLESA() {
 		loadConfig("load/eu.monnetproject.clesa.CLESA.properties");
 		setConfig();
 	}
+
+	
 
 	public CLESA(String configFilePath) {
 		loadConfig(configFilePath);
@@ -83,7 +93,6 @@ public class CLESA {
 	private void setConfig(){
 		multiLingualIndexPathToRead = config.getProperty("multiLingualIndexPathToRead");
 		lucHits = Integer.parseInt(config.getProperty("lucHits"));
-		boolean onRAM = false;
 		searcher = new Searcher(multiLingualIndexPathToRead, onRAM);
 	}	
 
@@ -214,15 +223,16 @@ public class CLESA {
 		text2 = "science";
 		Pair<String, Language> pair1 = new Pair<String, Language>(text1, Language.ENGLISH);
 		Pair<String, Language> pair2 = new Pair<String, Language>(text2, Language.SPANISH);
-		CLESA clesa = new CLESA();
+		boolean onRAM = true;
+		CLESA clesa = new CLESA(onRAM);
 		double score = clesa.score(pair1, pair2);
 		System.out.println(score);		
 
 		TIntDoubleHashMap vector = clesa.getVector(pair1);
 		Map<String, Double> uriVector = clesa.getURIVector(vector);
-		for(String uri : uriVector.keySet()){
+		for(String uri : uriVector.keySet())
 			System.out.println(uri + "\t" + uriVector.get(uri)) ;
-		}
+		
 	}
 
 }
