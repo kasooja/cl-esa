@@ -1,10 +1,13 @@
 package eu.monnetproject.clesa.processor.wiki.articles;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -23,33 +26,42 @@ import eu.monnetproject.clesa.lucene.basic.Indexer;
 import eu.monnetproject.clesa.lucene.basic.Reader;
 
 public class IndexCompressor {
-	
+
 	private static final double BUFFERRAMSIZE = 2048.0;
 	private static PerFieldAnalyzerWrapper analyzers;
 	private static Indexer indexer;
-	
-	
-	public static void main(String[] args) {
-		CompressedMultiLingualLucDocCreator docCreator = new CompressedMultiLingualLucDocCreator();
-	
-		Set<Language> languages = new HashSet<Language>();
-		languages.add(Language.ENGLISH);
-		languages.add(Language.SPANISH);
-		languages.add(Language.GERMAN);
-		languages.add(Language.DUTCH);
-		languages.add(Language.FRENCH);
-		languages.add(Language.PORTUGUESE);
-		
-		String indexDirPathToWrite = "/Users/kartik/Desktop/compSixth";
-		
-		createPerFieldAnalyzer(languages);		
-		openWriter(indexDirPathToWrite);
-		
-		Reader reader = new Reader(getIndex("/Users/kartik/Desktop/sixth"));
-		
+	private Set<Language> languages = new HashSet<Language>();
+	private String indexDirPathToWrite;
+	private String indexDirPathToRead;
+	private Properties config = new Properties();
+
+	public IndexCompressor() {
+		loadConfig();
+		createPerFieldAnalyzer(languages);	
+		openWriter();
+	}			
+
+	private void loadConfig() {
+		try {
+			config.load(new FileInputStream("load/eu.monnetproject.clesa.processor.wiki.articles.IndexCompressor.properties"));			
+			indexDirPathToWrite = config.getProperty("indexDirPathToWrite");
+			indexDirPathToRead = config.getProperty("indexDirPathToRead");
+			String[] languageCodes = config.getProperty("languages").split(";");
+			for(String languageCode : languageCodes) 
+				languages.add(Language.getByIso639_1(languageCode.trim().toLowerCase()));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}			
+
+	private void compress(){
+		CompressedMultiLingualLucDocCreator docCreator = new CompressedMultiLingualLucDocCreator();			
+		Reader reader = new Reader(getIndex(indexDirPathToRead));
 		int totalDocuments = reader.totalDocuments();
 		for(int i = 0; i<totalDocuments; i++){
-		System.out.println(i);	
+			System.out.println(i);	
 			Document doc = reader.getDocumentWithDocId(i);
 			String topic = doc.get(CompressedMultiLingualLucDocCreator.Fields.Topic.toString());
 			docCreator.addTopic(topic);
@@ -59,23 +71,23 @@ public class IndexCompressor {
 				String langTopicContent = doc.get(CompressedMultiLingualLucDocCreator.Fields.getLanguageTopicContentField(lang));
 				docCreator.addLanguageTopicContentField(lang, langTopicContent);				
 			}
-			
 			indexer.addDoc(docCreator.getLucDoc());
-			
 			docCreator.reset();
-			
 		}
 		indexer.closeIndexer();
 		reader.closeIndex();
-	
 	}
-	
-	public static Analyzer getAnalyzer(Language language){
+
+	public static void main(String[] args) {
+		IndexCompressor indexCompressor = new IndexCompressor();
+		indexCompressor.compress();
+	}
+
+	public Analyzer getAnalyzer(Language language){
 		return AnalyzerFactory.getAnalyzer(language);
 	}
 
-	
-	public static void createPerFieldAnalyzer(Set<Language> languagesDone){
+	public void createPerFieldAnalyzer(Set<Language> languagesDone){
 		Map<String, Analyzer> fieldAnalyzerMap = new HashMap<String, Analyzer>();
 		for(Language language : languagesDone) {
 			String topicContentFieldName = MultiLingualArticleOTDFLucDocCreator.Fields.getLanguageTopicContentField(language);
@@ -86,8 +98,7 @@ public class IndexCompressor {
 		analyzers = new PerFieldAnalyzerWrapper(new StandardAnalyzer(Version.LUCENE_36), fieldAnalyzerMap);
 	}
 
-	
-	private static void openWriter(String indexDirPathToWrite) {		
+	private void openWriter() {		
 		try {
 			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzers);
 			config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
@@ -100,11 +111,9 @@ public class IndexCompressor {
 		catch (IOException e) {
 			e.printStackTrace();
 		}			
-	}
+	}	
 
-	
-	
-	private static Directory getIndex(String indexPath) {
+	private Directory getIndex(String indexPath) {
 		Directory index = null;
 		try {
 			index = new SimpleFSDirectory(new File(indexPath));
