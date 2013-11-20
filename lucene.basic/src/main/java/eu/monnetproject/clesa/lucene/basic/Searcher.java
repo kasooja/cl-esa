@@ -86,8 +86,7 @@ public class Searcher {
 	private Directory getIndex(String indexPath) {
 		Directory index = null;
 		try {
-			Directory dir = new SimpleFSDirectory(new File(indexPath + 
-					System.getProperty("file.separator")));
+			Directory dir = new SimpleFSDirectory(new File(indexPath));
 			index = new RAMDirectory(dir);
 			dir.close();		
 		} catch (IOException e) {
@@ -99,8 +98,7 @@ public class Searcher {
 	private Directory getIndex(String indexPath, boolean onRAM) {
 		Directory index = null;
 		try {
-			Directory dir = new SimpleFSDirectory(new File(indexPath + 
-					System.getProperty("file.separator")));
+			Directory dir = new SimpleFSDirectory(new File(indexPath));
 			if(onRAM){
 				index = new RAMDirectory(dir);
 				dir.close();			
