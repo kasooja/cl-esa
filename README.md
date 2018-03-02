@@ -22,9 +22,8 @@ in the src/test/resources folder of ds.clesa module. There are some test codes i
 
 
 
-To create your own multilingual indices easily with the DBpedia triples based wiki dumps, you can follow the below steps: 
-
 Considering an example run over English and French multilingual index. Download the clesa project. 
+To create your own multilingual indices easily with the DBpedia triples based wiki dumps (with such DBpedia data, the project code would automatically utilize the English URIs as the pivot information to unify English and other language contents), you can follow the below steps: 
 
 1. Find the relevant DBpedia triples files, e.g. download short or extended abstracts NT (n-triples) files for both English and French from http://wiki.dbpedia.org/Downloads2015-04.
 
@@ -39,6 +38,14 @@ OTDF xml is an xml representation of the data into a format which the further co
 
 6. Then run AbstractsOTDFIndexer.java (https://github.com/kasooja/cl-esa/blob/master/processor/processor.wiki.abstracts/src/main/java/eu/monnetproject/clesa/processor/wiki/abstracts/AbstractsOTDFIndexer.java). This would create a monolingual index following the settings in the previous step. Follow the steps 5 and 6 for both French and English. 
 So, now you have monolingual indices for both English and French. Next steps would be to utilize these to build multilingual indices. 
+
+7. Change the config settings in MultiLingualAbstractsOTDFProcessor.properties file (here at https://github.com/kasooja/cl-esa/blob/master/processor/processor.wiki.abstracts/load/eu.monnetproject.clesa.processor.wiki.abstracts.MultiLingualAbstractsOTDFProcessor.properties). 
+Do it first for English as it would be used as the pivot e.g. for English, englishOTDFIndexDirPathToRead=give the index path created in the previous step, abstractLanguageISOCodeThisTime=en, multiLingualOTDFXmlToWrite=give a path of a new OTDF xml to be written. 
+However, the next time when you update the settings for French, you would need to provide the values for these parameters as well: otherLanguageOTDFIndexDirPathToRead=path for the French index created in the previous step 6, and multiLingualOTDFXmlToRead=would be the multilingual OTDF file created in step 7 starting with English pivot and multiLingualOTDFXmlToWrite=would be the path to a new OTDF xml file. Essentially, you keep updating the multiLingualOTDFXmlToWrite and multiLingualOTDFXmlToRead every time you put a new language information in the OTDF. 
+
+8. Then run MultiLingualAbstractsOTDFProcessor.java (https://github.com/kasooja/cl-esa/blob/master/processor/processor.wiki.abstracts/src/main/java/eu/monnetproject/clesa/processor/wiki/abstracts/MultiLingualAbstractsOTDFProcessor.java). This would create a multilingual OTDF xml file in a series of steps following the languages you want to index. Run steps 7 and 8 both for English (first, pivot lang) and French.
+
+
 
 
 
