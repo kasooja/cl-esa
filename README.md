@@ -21,7 +21,6 @@ You can try running CLESA by using the sample indices (containing Wikipedia Abst
 in the src/test/resources folder of ds.clesa module. There are some test codes in that module.
 
 
-
 Considering an example run over English and French multilingual index. Download the clesa project. 
 To create your own multilingual indices easily with the DBpedia triples based wiki dumps (with such DBpedia data, the project code would automatically utilize the English URIs as the pivot information to unify English and other language contents), you can follow the below steps: 
 
@@ -57,6 +56,8 @@ Now go ahead and create the multilingual index using this OTDF xml file.
 11. Change the config settings in MultiLingualAbstractsOTDFIndexer.properties file (here at https://github.com/kasooja/cl-esa/blob/master/processor/processor.wiki.abstracts/load/eu.monnetproject.clesa.processor.wiki.abstracts.MultiLingualAbstractsOTDFIndexer.properties). 
 indexDirPathToWrite = folder path to write the index in, OTDFXmlFileToRead=path to the filtered multilingual OTDF xml created in the previous step 11, languages=languages to index, use semicolon as separator. 
 
+
+Thanks to Zansouyé https://github.com/zansouye01 ;) for making me add the above steps to create the multilingual index.
 
 
 
