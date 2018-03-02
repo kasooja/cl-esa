@@ -45,7 +45,17 @@ However, the next time when you update the settings for French, you would need t
 
 8. Then run MultiLingualAbstractsOTDFProcessor.java (https://github.com/kasooja/cl-esa/blob/master/processor/processor.wiki.abstracts/src/main/java/eu/monnetproject/clesa/processor/wiki/abstracts/MultiLingualAbstractsOTDFProcessor.java). This would create a multilingual OTDF xml file in a series of steps following the languages you want to index. Run steps 7 and 8 both for English (first, pivot lang) and French.
 
+As you have now already created a multilingual xml file containing the wiki information in the last step, we can proceed with creating a multilingual index using this file. This file contains multiple documents, where every document contains a title, URI (English DBpedia URI as pivot), English content, French content (and other languages if followed in the previous steps). 
 
+9. Before going ahead with creating the multilingual indices, we can put some constraints on the documents, e.g. how many documents we want in our index, or how many words a document (both English and French or any other language content) should contain. 
+Change the config settings in MinNoOfWordsInAllFilter.properties file (here at https://github.com/kasooja/cl-esa/blob/master/processor/processor.wiki.abstracts/load/eu.monnetproject.clesa.processor.wiki.abstracts.MinNoOfWordsInAllFilter.properties). minNoOfWordsInAll= minimum no. of words a document to contain, multiLingualOTDFXmlToRead=multilingual OTDF xml file created in the previous step 8, multiLingualOTDFXmlToWrite=new filtered down multilingual OTDF file to be written, maxHowManyDocs=how many docs you want in the final index, what languages you want in the index, use semicolon to add more languages. 
+
+10. Run MinNoOfWordsInAllFilter.java (here at https://github.com/kasooja/cl-esa/blob/master/processor/processor.wiki.abstracts/src/main/java/eu/monnetproject/clesa/processor/wiki/abstracts/MinNoOfWordsInAllFilter.java). This would create a filtered down multilingual OTDF xml file. 
+
+Now go ahead and create the multilingual index using this OTDF xml file. 
+
+11. Change the config settings in MultiLingualAbstractsOTDFIndexer.properties file (here at https://github.com/kasooja/cl-esa/blob/master/processor/processor.wiki.abstracts/load/eu.monnetproject.clesa.processor.wiki.abstracts.MultiLingualAbstractsOTDFIndexer.properties). 
+indexDirPathToWrite = folder path to write the index in, OTDFXmlFileToRead=path to the filtered multilingual OTDF xml created in the previous step 11, languages=languages to index, use semicolon as separator. 
 
 
 
